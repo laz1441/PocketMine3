@@ -58,6 +58,8 @@ class AddPlayerPacket extends DataPacket{
 	public $headYaw = null; //TODO
 	/** @var ItemStackWrapper */
 	public $item;
+	
+	public $gameMode;
 	/**
 	 * @var mixed[][]
 	 * @phpstan-var array<int, array{0: int, 1: mixed}>
@@ -99,6 +101,7 @@ class AddPlayerPacket extends DataPacket{
 		$this->yaw = ((\unpack("g", $this->get(4))[1]));
 		$this->headYaw = ((\unpack("g", $this->get(4))[1]));
 		$this->item = ItemStackWrapper::read($this);
+		$this->gameMode = $this->getVarInt();
 		$this->metadata = $this->getEntityMetadata();
 
 		$this->uvarint1 = $this->getUnsignedVarInt();
@@ -130,6 +133,7 @@ class AddPlayerPacket extends DataPacket{
 		($this->buffer .= (\pack("g", $this->yaw)));
 		($this->buffer .= (\pack("g", $this->headYaw ?? $this->yaw)));
 		$this->item->write($this);
+		$this->putVarInt($this->gameMode);
 		$this->putEntityMetadata($this->metadata);
 
 		$this->putUnsignedVarInt($this->uvarint1);

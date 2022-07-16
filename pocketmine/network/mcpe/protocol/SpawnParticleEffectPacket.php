@@ -33,19 +33,22 @@ class SpawnParticleEffectPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::SPAWN_PARTICLE_EFFECT_PACKET;
 
 	/** @var int */
-	public $dimensionId = DimensionIds::OVERWORLD; //wtf mojang
+	public $dimensionId = DimensionIds::OVERWORLD;
 	/** @var int */
 	public $entityUniqueId = -1; //default none
 	/** @var Vector3 */
 	public $position;
 	/** @var string */
 	public $particleName;
+	
+	public $molangVariablesJson;
 
 	protected function decodePayload(){
 		$this->dimensionId = (\ord($this->get(1)));
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->position = $this->getVector3();
 		$this->particleName = $this->getString();
+		$this->molangVariablesJson = $this->getString();
 	}
 
 	protected function encodePayload(){
@@ -53,6 +56,7 @@ class SpawnParticleEffectPacket extends DataPacket{
 		$this->putEntityUniqueId($this->entityUniqueId);
 		$this->putVector3($this->position);
 		$this->putString($this->particleName);
+		$this->putString($this->molangVariablesJson);
 	}
 
 	public function handle(NetworkSession $session) : bool{

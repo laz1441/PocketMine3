@@ -197,6 +197,10 @@ use pocketmine\network\mcpe\protocol\UpdatePlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\UpdateSoftEnumPacket;
 use pocketmine\network\mcpe\protocol\UpdateSubChunkBlocksPacket;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
+use pocketmine\network\mcpe\protocol\TickingAreasLoadStatusPacket;
+use pocketmine\network\mcpe\protocol\DimensionDataPacket;
+use pocketmine\network\mcpe\protocol\AgentActionEventPacket;
+use pocketmine\network\mcpe\protocol\ChangeMobPropertyPacket;
 
 abstract class NetworkSession{
 
@@ -894,6 +898,22 @@ abstract class NetworkSession{
 	}
 
 	public function handleCodeBuilderSource(CodeBuilderSourcePacket $packet) : bool{
+		return false;
+	}
+	
+	public function handleTickingAreasLoadStatus(TickingAreasLoadStatusPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleDimensionData(DimensionDataPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleAgentActionEvent(AgentActionEventPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleChangeMobProperty(ChangeMobPropertyPacket $packet) : bool{
 		return false;
 	}
 }

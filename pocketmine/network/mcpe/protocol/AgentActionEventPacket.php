@@ -60,6 +60,6 @@ class AgentActionEventPacket extends DataPacket{
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleSimpleEvent($this);
+		return $session->handleAgentActionEvent($this);
 	}
 }

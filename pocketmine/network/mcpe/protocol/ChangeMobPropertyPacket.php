@@ -88,6 +88,6 @@ class ChangeMobPropertyPacket extends DataPacket{
 	}
 
 	public function handle(NetworkSession $session) : bool{
-		return $session->handleSimpleEvent($this);
+		return $session->handleChangeMobProperty($this);
 	}
 }

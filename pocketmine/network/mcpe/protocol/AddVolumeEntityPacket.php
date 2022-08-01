@@ -40,16 +40,22 @@ class AddVolumeEntityPacket extends DataPacket{
 	/** @var string */
 	private $engineVersion;
 	
+	private string $jsonIdentifier;
+	
+	private string $instanceName;
+	
 	private BlockPosition $minBound;
 	
 	private BlockPosition $maxBound;
 
 	private int $dimension;
 
-	public static function create(int $entityNetId, CompoundTag $data, BlockPosition $minBound, BlockPosition $maxBound, int $dimension, string $engineVersion) : self{
+	public static function create(int $entityNetId, CompoundTag $data, string $jsonIdentifier, string $instanceName, BlockPosition $minBound, BlockPosition $maxBound, int $dimension, string $engineVersion) : self{
 		$result = new self;
 		$result->entityNetId = $entityNetId;
 		$result->data = $data;
+		$result->jsonIdentifier = $jsonIdentifier;
+		$result->instanceName = $instanceName;
 		$result->minBound = $minBound;
 		$result->maxBound = $maxBound;
 		$result->dimension = $dimension;
@@ -60,6 +66,10 @@ class AddVolumeEntityPacket extends DataPacket{
 	public function getEntityNetId() : int{ return $this->entityNetId; }
 
 	public function getData() : CompoundTag{ return $this->data; }
+	
+	public function getJsonIdentifier() : string{ return $this->jsonIdentifier; }
+	
+	public function getInstanceName() : string{ return $this->instanceName; }
 
 	public function getEngineVersion() : string{ return $this->engineVersion; }
 	
@@ -72,6 +82,8 @@ class AddVolumeEntityPacket extends DataPacket{
 	protected function decodePayload() : void{
 		$this->entityNetId = $this->getUnsignedVarInt();
 		$this->data = $this->getNbtCompoundRoot();
+		$this->jsonIdentifier = $this->getString();
+		$this->instanceName = $this->getString();
 		$this->minBound = $this->getBlockPosition();
 		$this->maxBound = $this->getBlockPosition();
 		$this->dimension = $this->getVarInt();
@@ -81,6 +93,8 @@ class AddVolumeEntityPacket extends DataPacket{
 	protected function encodePayload() : void{
 		$this->putUnsignedVarInt($this->entityNetId);
 		($this->buffer .= (new NetworkLittleEndianNBTStream())->write($this->data));
+		$this->putString($this->jsonIdentifier);
+		$this->putString($this->instanceName);
 		$this->putBlockPosition($this->minBound);
 		$this->putBlockPosition($this->maxBound);
 		$this->putVarInt($this->dimension);

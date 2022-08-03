@@ -65,6 +65,7 @@ use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
+use pocketmine\network\mcpe\protocol\RequestAbilityPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -77,6 +78,7 @@ use function preg_match;
 use function strlen;
 use function substr;
 use function trim;
+use function is_bool;
 
 class PlayerNetworkSessionAdapter extends NetworkSession{
 
@@ -194,7 +196,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
-		return $this->player->handleAdventureSettings($packet);
+		return true;
 	}
 
 	public function handleBlockActorData(BlockActorDataPacket $packet) : bool{
@@ -317,5 +319,23 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 
 	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet) : bool{
 		return true; //TODO: implement this properly - this is here to silence debug spam from MCPE dev builds
+	}
+	
+		public function handleRequestAbility(RequestAbilityPacket $packet) : bool{
+		if($packet->getAbilityId() === RequestAbilityPacket::ABILITY_FLYING){
+			$isFlying = $packet->getAbilityValue();
+			if(!is_bool($isFlying)){
+				throw new PacketHandlingException("Flying ability should always have a bool value");
+			}
+			if($isFlying !== $this->player->isFlying()){
+				if(!$this->player->toggleFlight($isFlying)){
+					$this->session->syncAdventureSettings($this->player);
+				}
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 }

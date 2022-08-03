@@ -58,6 +58,8 @@ class PlayerActionPacket extends DataPacket{
 	public const ACTION_INTERACT_BLOCK = 25;
 	public const ACTION_PREDICT_DESTROY_BLOCK = 26;
 	public const ACTION_CONTINUE_DESTROY_BLOCK = 27;
+	public const START_ITEM_USE_ON = 28;
+	public const STOP_ITEM_USE_ON = 29;
 
 	/** @var int */
 	public $entityRuntimeId;
@@ -76,6 +78,7 @@ class PlayerActionPacket extends DataPacket{
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->action = $this->getVarInt();
 		$this->getBlockPosition($this->x, $this->y, $this->z);
+		$this->resultPosition = $this->getBlockPosition();
 		$this->face = $this->getVarInt();
 	}
 
@@ -83,6 +86,7 @@ class PlayerActionPacket extends DataPacket{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVarInt($this->action);
 		$this->putBlockPosition($this->x, $this->y, $this->z);
+		$this->putBlockPosition($this->resultPosition);
 		$this->putVarInt($this->face);
 	}
 

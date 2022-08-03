@@ -26,9 +26,11 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\utils\Binary;
 
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\BlockPaletteEntry;
+use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\EducationEditionOffer;
 use pocketmine\network\mcpe\protocol\types\EducationUriResource;
 use pocketmine\network\mcpe\protocol\types\Experiments;
@@ -39,6 +41,8 @@ use pocketmine\network\mcpe\protocol\types\MultiplayerGameVisibility;
 use pocketmine\network\mcpe\protocol\types\PlayerMovementSettings;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\types\SpawnSettings;
+use pocketmine\utils\UUID;
+use Ramsey\Uuid\UuidInterface;
 use function count;
 
 class StartGamePacket extends DataPacket{
@@ -58,6 +62,8 @@ class StartGamePacket extends DataPacket{
 	public $pitch;
 	/** @var float */
 	public $yaw;
+
+	public $playerActorProperties;
 
 	/** @var int */
 	public $seed;
@@ -182,6 +188,8 @@ class StartGamePacket extends DataPacket{
 	/** @var string */
 	public $serverSoftwareVersion;
 
+	public $worldTemplateId;
+
 	public int $blockPaletteChecksum;
 
 	protected function decodePayload(){
@@ -266,8 +274,11 @@ class StartGamePacket extends DataPacket{
 
 		$this->multiplayerCorrelationId = $this->getString();
 		$this->enableNewInventorySystem = (($this->get(1) !== "\x00"));
+		$nbt = new NetworkLittleEndianNBTStream();
+		$this->playerActorProperties = $nbt->read();
 		$this->serverSoftwareVersion = $this->getString();
 		$this->blockPaletteChecksum = (Binary::readLLong($this->get(8)));
+		$this->worldTemplateId = $in->getUUID();
 	}
 
 	protected function encodePayload(){
@@ -348,8 +359,13 @@ class StartGamePacket extends DataPacket{
 
 		$this->putString($this->multiplayerCorrelationId);
 		($this->buffer .= ($this->enableNewInventorySystem ? "\x01" : "\x00"));
+			$nbt = new NetworkLittleEndianNBTStream();
+			$nbt->setData(new CompoundTag(""));
+			($this->buffer .= $nbt->write(false));
 		$this->putString($this->serverSoftwareVersion);
 		($this->buffer .= (\pack("VV", $this->blockPaletteChecksum & 0xFFFFFFFF, $this->blockPaletteChecksum >> 32)));
+		//$this->putUUID($this->worldTemplateId);
+		$this->putUUID(UUID::fromBinary(str_repeat("\x00", 16), 0));
 	}
 
 	public function handle(NetworkSession $session) : bool{

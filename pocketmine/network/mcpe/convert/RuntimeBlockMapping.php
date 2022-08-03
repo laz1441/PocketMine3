@@ -60,7 +60,7 @@ final class RuntimeBlockMapping{
 		}
 		self::$bedrockKnownStates = $list;
 
-		self::setupLegacyMappings(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/canonical_block_states.nbt"));
+		self::setupLegacyMappings();
 	}
 
 	private static function setupLegacyMappings() : void{

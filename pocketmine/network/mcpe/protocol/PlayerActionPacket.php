@@ -78,7 +78,7 @@ class PlayerActionPacket extends DataPacket{
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->action = $this->getVarInt();
 		$this->getBlockPosition($this->x, $this->y, $this->z);
-		$this->resultPosition = $this->getBlockPosition();
+		$this->getBlockPosition($this->x, $this->y, $this->z);
 		$this->face = $this->getVarInt();
 	}
 
@@ -86,7 +86,7 @@ class PlayerActionPacket extends DataPacket{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVarInt($this->action);
 		$this->putBlockPosition($this->x, $this->y, $this->z);
-		$this->putBlockPosition($this->resultPosition);
+		$this->putBlockPosition($this->x, $this->y, $this->z);
 		$this->putVarInt($this->face);
 	}
 

@@ -61,7 +61,7 @@ class StartGamePacket extends DataPacket{
 	/** @var float */
 	public $yaw;
 
-	public $playerActorProperties;
+	public $playerActorProperties = [];
 
 	/** @var int */
 	public $seed;
@@ -273,8 +273,7 @@ class StartGamePacket extends DataPacket{
 		$this->multiplayerCorrelationId = $this->getString();
 		$this->enableNewInventorySystem = (($this->get(1) !== "\x00")); 
 		$this->serverSoftwareVersion = $this->getString();
-		//$this->playerActorProperties = $this->getNbtCompoundRoot();                             ////////////////////////////////////////////////////////////////////////  
-		$this->playerActorProperties = new CacheableNbt($this->getNbtCompoundRoot());
+		$this->playerActorProperties = $this->getNbtCompoundRoot();
 		$this->blockPaletteChecksum = (Binary::readLLong($this->get(8)));
 		$this->worldTemplateId = $this->getUUID();                                
 	}
@@ -358,11 +357,9 @@ class StartGamePacket extends DataPacket{
 		$this->putString($this->multiplayerCorrelationId);
 		($this->buffer .= ($this->enableNewInventorySystem ? "\x01" : "\x00"));
 		$this->putString($this->serverSoftwareVersion);
-		$nbt = new NetworkLittleEndianNBTStream();                                                                                    //??????????????????????????????????????????????
-		$nbt->setData(new CompoundTag(""));
-		($this->buffer .= $nbt->write(false));     
-		($this->buffer .= (\pack("VV", $this->blockPaletteChecksum & 0xFFFFFFFF, $this->blockPaletteChecksum >> 32)));
-		$this->putUUID(UUID::fromBinary(str_repeat("\x00", 16), 0));       
+		($this->buffer .= (new NetworkLittleEndianNBTStream())->write(new CompoundTag("", $this->playerActorProperties)));
+		($this->buffer .= (\pack("VV", $this->blockPaletteChecksum & 0xFFFFFFFF, $this->blockPaletteChecksum >> 32)));    
+		$this->putUUID($this->getUUID());
 	}
 
 	public function handle(NetworkSession $session) : bool{

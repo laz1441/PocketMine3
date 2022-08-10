@@ -135,13 +135,14 @@ class AddPlayerPacket extends DataPacket{
 		$this->item->write($this);
 		$this->putVarInt($this->gameMode);
 		$this->putEntityMetadata($this->metadata);
-
-		$this->putUnsignedVarInt($this->uvarint1);
-		$this->putUnsignedVarInt($this->uvarint2);
-		$this->putUnsignedVarInt($this->uvarint3);
-		$this->putUnsignedVarInt($this->uvarint4);
-		$this->putUnsignedVarInt($this->uvarint5);
-
+ 		$this->putUnsignedVarInt(0); // playerPermission
+  		$this->putUnsignedVarInt(0); // commandPermission
+ 		$this->putUnsignedVarInt(1); // abilityLayers size
+		$this->putLShort(1); // BASE layer type
+ 		$this->putLInt(262143); // abilitiesSet (all)
+		$this->putLInt(63); // abilityValues  (survival)
+		$this->putLFloat(0.1); // flySpeed
+		$this->putLFloat(0.05); // walkSpeed
 		($this->buffer .= (\pack("VV", $this->long1 & 0xFFFFFFFF, $this->long1 >> 32)));
 
 		$this->putUnsignedVarInt(count($this->links));

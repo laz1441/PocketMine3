@@ -189,6 +189,11 @@ class StartGamePacket extends DataPacket{
 	public $worldTemplateId;
 
 	public int $blockPaletteChecksum;
+	public bool $personaDisabled = false;
+	public bool $customSkinsDisabled = false;
+	public int $chatRestrictionLevel = 0;
+	public bool $disablePlayerInteractions = false;
+ 	public bool $clientSideGeneration = false;
 
 	protected function decodePayload(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
@@ -234,6 +239,8 @@ class StartGamePacket extends DataPacket{
 		$this->isFromWorldTemplate = (($this->get(1) !== "\x00"));
 		$this->isWorldTemplateOptionLocked = (($this->get(1) !== "\x00"));
 		$this->onlySpawnV1Villagers = (($this->get(1) !== "\x00"));
+		$this->personaDisabled = $this->getBool();
+		$this->customSkinsDisabled = $this->getBool();
 		$this->vanillaVersion = $this->getString();
 		$this->limitedWorldWidth = ((\unpack("V", $this->get(4))[1] << 32 >> 32));
 		$this->limitedWorldLength = ((\unpack("V", $this->get(4))[1] << 32 >> 32));
@@ -244,7 +251,8 @@ class StartGamePacket extends DataPacket{
 		}else{
 			$this->experimentalGameplayOverride = null;
 		}
-
+		$this->chatRestrictionLevel = $this->getByte();
+		$this->disablePlayerInteractions = $this->getBool();
 		$this->levelId = $this->getString();
 		$this->worldName = $this->getString();
 		$this->premiumWorldTemplateId = $this->getString();
@@ -275,7 +283,8 @@ class StartGamePacket extends DataPacket{
 		$this->serverSoftwareVersion = $this->getString();
 		$this->playerActorProperties = $this->getNbtCompoundRoot();
 		$this->blockPaletteChecksum = (Binary::readLLong($this->get(8)));
-		$this->worldTemplateId = $this->getUUID();                                
+		$this->worldTemplateId = $this->getUUID();       
+		$this->clientSideGeneration = $this->getBool();		
 	}
 
 	protected function encodePayload(){
@@ -322,6 +331,8 @@ class StartGamePacket extends DataPacket{
 		($this->buffer .= ($this->isFromWorldTemplate ? "\x01" : "\x00"));
 		($this->buffer .= ($this->isWorldTemplateOptionLocked ? "\x01" : "\x00"));
 		($this->buffer .= ($this->onlySpawnV1Villagers ? "\x01" : "\x00"));
+		$this->putBool($this->personaDisabled);
+ 		$this->putBool($this->customSkinsDisabled);
 		$this->putString($this->vanillaVersion);
 		($this->buffer .= (\pack("V", $this->limitedWorldWidth)));
 		($this->buffer .= (\pack("V", $this->limitedWorldLength)));
@@ -331,7 +342,8 @@ class StartGamePacket extends DataPacket{
 		if($this->experimentalGameplayOverride !== null){
 			($this->buffer .= ($this->experimentalGameplayOverride ? "\x01" : "\x00"));
 		}
-
+		$this->putByte($this->chatRestrictionLevel);
+		$this->putBool($this->disablePlayerInteractions);
 		$this->putString($this->levelId);
 		$this->putString($this->worldName);
 		$this->putString($this->premiumWorldTemplateId);
@@ -360,6 +372,7 @@ class StartGamePacket extends DataPacket{
 		($this->buffer .= (new NetworkLittleEndianNBTStream())->write(new CompoundTag("", $this->playerActorProperties)));
 		($this->buffer .= (\pack("VV", $this->blockPaletteChecksum & 0xFFFFFFFF, $this->blockPaletteChecksum >> 32)));    
 		$this->putUUID($this->getUUID());
+		$this->putBool($this->clientSideGeneration);
 	}
 
 	public function handle(NetworkSession $session) : bool{

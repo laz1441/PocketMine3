@@ -202,7 +202,6 @@ use pocketmine\network\mcpe\protocol\DimensionDataPacket;
 use pocketmine\network\mcpe\protocol\AgentActionEventPacket;
 use pocketmine\network\mcpe\protocol\ChangeMobPropertyPacket;
 use pocketmine\network\mcpe\protocol\LessonProgressPacket;
-use pocketmine\network\mcpe\protocol\RequestAbilityPacket;
 use pocketmine\network\mcpe\protocol\RequestPermissionsPacket;
 use pocketmine\network\mcpe\protocol\ToastRequestPacket;
 
@@ -922,10 +921,6 @@ abstract class NetworkSession{
 	}
 	
 	public function handleLessonProgress(LessonProgressPacket $packet) : bool{
-		return false;
-	}
-
-	public function handleRequestAbility(RequestAbilityPacket $packet) : bool{
 		return false;
 	}
 

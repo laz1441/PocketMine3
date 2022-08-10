@@ -549,6 +549,7 @@ class NetworkBinaryStream extends BinaryStream{
 			($this->buffer .= (\pack("g", $attribute->getValue())));
 			($this->buffer .= (\pack("g", $attribute->getDefaultValue())));
 			$this->putString($attribute->getName());
+			$this->putUnsignedVarInt(0); //for modifiers. idk whats that
 		}
 	}
 

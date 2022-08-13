@@ -186,7 +186,7 @@ class StartGamePacket extends DataPacket{
 	/** @var string */
 	public $serverSoftwareVersion;
 
-	public $worldTemplateId;
+	public UUID $worldTemplateId;
 
 	public int $blockPaletteChecksum;
 	public bool $personaDisabled = false;
@@ -283,7 +283,7 @@ class StartGamePacket extends DataPacket{
 		$this->serverSoftwareVersion = $this->getString();
 		$this->playerActorProperties = $this->getNbtCompoundRoot();
 		$this->blockPaletteChecksum = (Binary::readLLong($this->get(8)));
-		$this->worldTemplateId = $this->getUUID();       
+		$this->worldTemplateId = $this->getUUID();    
 		$this->clientSideGeneration = $this->getBool();		
 	}
 

@@ -28,7 +28,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\TieredTool;
 
 class NetherReactor extends Solid{
-	protected $id = Block::NETHER_REACTOR;
+	protected $id = Block::PORTAL;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
